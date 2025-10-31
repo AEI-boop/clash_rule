@@ -1,0 +1,42 @@
+# ========================================
+# 自定义直连规则集
+# 作者: AEI-boop
+# 更新时间: 2025-10-31
+# ========================================
+
+# ========== 微信相关 ==========
+PROCESS-NAME,WeChatAppEx Helper
+PROCESS-NAME,Wechat
+DOMAIN-SUFFIX,wechat.com
+DOMAIN-SUFFIX,weixin.qq.com
+DOMAIN-SUFFIX,wx.qq.com
+DOMAIN-SUFFIX,qq.com
+
+# ========== 学校和教育网站 ==========
+DOMAIN-SUFFIX,hdu.edu
+DOMAIN-SUFFIX,phy.webvpn.hdu.edu.cn
+IP-CIDR,202.114.0.0/16,no-resolve
+IP-CIDR,202.115.0.0/16,no-resolve
+DOMAIN,icourse163.org
+DOMAIN-SUFFIX,wiki.ros.org
+
+# ========== 游戏和平台 ==========
+DOMAIN-SUFFIX,steampp.net
+DOMAIN-SUFFIX,store.epicgames.com
+
+# ========== 国内网站和服务 ==========
+DOMAIN-SUFFIX,xrzww.com
+DOMAIN-SUFFIX,doubao.com
+DOMAIN-SUFFIX,douyin.com
+DOMAIN-SUFFIX,zhutix.com
+DOMAIN-SUFFIX,download.zhutix.com
+DOMAIN-SUFFIX,static.zhutix.com
+DOMAIN-SUFFIX,img.zhutix.com
+DOMAIN,sixyin.com
+DOMAIN,gitcode.com
+DOMAIN,pan.quark.cn
+DOMAIN,linux.do
+DOMAIN,gsgs.nxxbbf.com
+
+# ========== 其他 ==========
+DOMAIN,fmhy.net
