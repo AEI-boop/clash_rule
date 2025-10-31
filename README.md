@@ -5,18 +5,16 @@
 ## 使用方法
 
 在 Clash 配置中添加：
-
-\`\`\`yaml
 rule-providers:
 {
 MyCustomDirect:
-{type: http
+{ type: http
 behavior: classical
 url: "https://testingcf.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list"
 path: ./ruleset/MyCustomDirect.list
 interval: 86400
 }
-}\`\`\`
+}
 
 ## 规则说明
 
