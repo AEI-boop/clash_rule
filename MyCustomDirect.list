@@ -12,14 +12,60 @@ DOMAIN-SUFFIX,weixin.qq.com
 DOMAIN-SUFFIX,wx.qq.com
 DOMAIN-SUFFIX,qq.com
 
-# ========== 学校和教育网站 ==========
+# ========== 杭州电子科技大学 ==========
+
+# --- 域名规则 ---
+DOMAIN-SUFFIX,hdu.edu.cn
 DOMAIN-SUFFIX,hdu.edu
-DOMAIN-SUFFIX,phy.webvpn.hdu.edu.cn
+DOMAIN,www.hdu.edu.cn
+DOMAIN,webvpn.hdu.edu.cn
+DOMAIN,mail.hdu.edu.cn
+DOMAIN,lib.hdu.edu.cn
+DOMAIN,jwc.hdu.edu.cn
+DOMAIN,yjs.hdu.edu.cn
+DOMAIN,cas.hdu.edu.cn
+
+# --- IPv4 公网地址 ---
+# 学校 VPN 出口
+IP-CIDR,218.75.123.0/24,no-resolve
+IP-CIDR,218.75.0.0/16,no-resolve
+
+# 教育网常用段
 IP-CIDR,202.114.0.0/16,no-resolve
 IP-CIDR,202.115.0.0/16,no-resolve
-DOMAIN,icourse163.org
-DOMAIN-SUFFIX,wiki.ros.org
+IP-CIDR,210.32.0.0/16,no-resolve
+IP-CIDR,220.197.30.0/24,no-resolve
 
+# 学校 DNS 服务器
+IP-CIDR,210.32.32.1/32,no-resolve
+
+# --- IPv4 内网地址（仅校园网内有效）---
+# 学校内网段
+IP-CIDR,192.168.101.0/24,no-resolve
+IP-CIDR,192.168.199.0/24,no-resolve
+
+# 标准内网段
+IP-CIDR,10.0.0.0/8,no-resolve
+IP-CIDR,172.16.0.0/12,no-resolve
+IP-CIDR,192.168.0.0/16,no-resolve
+
+# --- IPv6 地址段 ---
+# 学校 IPv6 主段（CERNET2 教育网）
+IP-CIDR6,2001:250:6402::/48,no-resolve
+IP-CIDR6,2001:da8:d800::/48,no-resolve
+
+# 网易企业邮箱 IPv6
+IP-CIDR6,2408:876a:1110::/48,no-resolve
+
+# 教育网 IPv6 总段（可选，范围很大）
+# IP-CIDR6,2001:250::/32,no-resolve
+# IP-CIDR6,2001:da8::/32,no-resolve
+
+# --- 其他教育资源 ---
+DOMAIN,icourse163.org
+DOMAIN-SUFFIX,mooc.org
+DOMAIN-SUFFIX,xuetangx.com
+DOMAIN-SUFFIX,wiki.ros.org
 # ========== 游戏和平台 ==========
 DOMAIN-SUFFIX,steampp.net
 DOMAIN-SUFFIX,store.epicgames.com
