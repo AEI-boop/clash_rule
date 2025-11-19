@@ -11,7 +11,7 @@ rule-providers:
   MyCustomDirect:
     type: http
     behavior: classical
-    url: 'https://testingcf.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list'
+    url: "https://testingcf.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list"
     path: ./ruleset/MyCustomDirect.list
     interval: 86400
 ```
@@ -25,3 +25,5 @@ rule-providers:
 ## 更新日志
 
 - 2025-10-31: 初始版本
+- 2025-11-14: 修改部分规则
+- 2025-11-19: 更改部分
