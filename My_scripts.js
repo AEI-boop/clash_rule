@@ -8,14 +8,12 @@ function main(config) {
   // DNS配置用于解析域名，防止DNS泄露，提高隐私安全
 
   // 定义国内DNS服务器列表（使用DoH协议 - DNS over HTTPS）
-  // 223.5.5.5 是阿里云DNS，1.12.12.12 是DNSPod
   const cnDnsList = [
     "https://223.5.5.5/dns-query",
     "https://1.12.12.12/dns-query",
   ];
 
   // 定义可信的国外DNS服务器列表
-  // cooluc.com 使用QUIC协议（更快），1.0.0.1 和 1.1.1.1 是Cloudflare DNS
   const trustDnsList = [
     "quic://dns.cooluc.com",
     "https://1.0.0.1/dns-query",
@@ -25,14 +23,17 @@ function main(config) {
   // 配置DNS选项
   config.dns = {
     enable: true, // 启用DNS功能
-    "prefer-h3": true, // 优先使用HTTP/3协议（DoH3），速度更快
+    // "prefer-h3": true, // DoH3加速（部分DNS不支持，遇到DNS解析异常时可取消注释测试）
 
-    // 默认DNS服务器：用于解析其他DNS服务器的域名和代理节点的域名
-    // 必须是IP地址或可直接访问的DNS
-    "default-nameserver": cnDnsList,
+    // ⚠️ 修复点1：默认DNS服务器必须是纯IP地址
+    // 用于解析其他DNS服务器的域名和代理节点的域名
+    "default-nameserver": ["223.5.5.5", "119.29.29.29", "1.12.12.12"],
 
     // 主DNS服务器：用于解析普通网络请求的域名
     nameserver: trustDnsList,
+
+    // 专门用于解析代理节点域名的DNS（用国内DNS，防止鸡生蛋问题，不影响普通流量DNS）
+    "proxy-server-nameserver": cnDnsList,
 
     // DNS分流策略：根据域名类型选择不同的DNS服务器
     "nameserver-policy": {
@@ -41,8 +42,8 @@ function main(config) {
       "geosite:google": trustDnsList, // Google域名使用国外DNS
     },
 
-    // 备用DNS服务器：当主DNS返回可疑结果时使用
-    fallback: trustDnsList,
+    // 备用DNS服务器：当主DNS返回可疑结果时使用（与nameserver不同，避免两者互为备用失效）
+    fallback: ["https://8.8.8.8/dns-query", "https://8.8.4.4/dns-query"],
 
     // 备用DNS过滤器：判断DNS结果是否被污染
     "fallback-filter": {
@@ -107,17 +108,18 @@ function main(config) {
     Object.entries(rawGeoxURLs).map(([key, githubUrl]) => [
       key,
       `${githubPrefix}${githubUrl}`, // 给每个URL加上镜像前缀
-    ])
+    ]),
   );
 
   // ==================== 代理组配置 ====================
   // 代理组是对代理节点的分组和策略管理
 
+  // ⚠️ 修复点2：将所有 testingcf 替换为了更稳定的 fastly 源，防止图标和规则下载卡死
   config["proxy-groups"] = [
     // 【主选择组】用户手动选择使用哪个策略
     {
       name: "节点选择", // 代理组名称
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png", // 显示图标
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Proxy.png", // 显示图标
       type: "select", // 类型：手动选择
       proxies: [
         // 可选的选项列表
@@ -137,18 +139,19 @@ function main(config) {
     // 【自动选择组】自动测速，选择延迟最低的节点
     {
       name: "自动选择",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Auto.png",
       type: "url-test", // 类型：URL测试，自动选择最快节点
       "include-all": true, // 包含所有代理节点
       "exclude-filter": "香港|Hong Kong|HK|hk|hongkong|HongKong", // 排除香港节点（正则表达式）
       interval: 300, // 每300秒（5分钟）测试一次
       tolerance: 50, // 延迟容差50ms：新节点比当前节点快50ms以上才切换
+      lazy: true, // 延迟测速：仅在被选中时才测速，减少启动时资源消耗
     },
 
     // 【手动切换组】可以手动选择任意一个具体的代理节点
     {
       name: "手动切换",
-      icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
+      icon: "https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/select.png",
       "include-all": true, // 包含所有代理节点
       type: "select", // 手动选择类型
     },
@@ -156,7 +159,7 @@ function main(config) {
     // 【AI服务专用组】用于ChatGPT、Claude等AI服务
     {
       name: "AI节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bot.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Bot.png",
       type: "select",
       proxies: [
         "美国节点", // AI服务通常需要美国节点
@@ -176,7 +179,7 @@ function main(config) {
     // 【Telegram专用组】
     {
       name: "电报消息",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png",
       type: "select",
       proxies: [
         "美国节点", // Telegram服务器主要在美国
@@ -196,7 +199,7 @@ function main(config) {
     // 【YouTube专用组】
     {
       name: "油管视频",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png",
       type: "select",
       proxies: [
         "节点选择",
@@ -216,7 +219,7 @@ function main(config) {
     // 【Netflix专用组】
     {
       name: "奈飞视频",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Netflix.png",
       type: "select",
       proxies: [
         "节点选择",
@@ -236,7 +239,7 @@ function main(config) {
     // 【国内媒体组】爱奇艺、腾讯视频、B站等
     {
       name: "国内媒体",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DomesticMedia.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/DomesticMedia.png",
       type: "select",
       proxies: [
         "DIRECT", // 国内媒体默认直连
@@ -254,7 +257,7 @@ function main(config) {
     // 【国外媒体组】除YouTube、Netflix外的其他国外流媒体
     {
       name: "国外媒体",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/ForeignMedia.png",
       type: "select",
       proxies: [
         "节点选择",
@@ -274,7 +277,7 @@ function main(config) {
     // 【谷歌FCM组】Google Firebase Cloud Messaging推送服务
     {
       name: "谷歌FCM",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Google_Search.png",
       type: "select",
       proxies: [
         "DIRECT", // FCM在国内可能可用，默认直连
@@ -293,7 +296,7 @@ function main(config) {
     // 【微软Bing组】
     {
       name: "微软Bing",
-      icon: "https://testingcf.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/bing.png",
+      icon: "https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/bing.png",
       type: "select",
       proxies: [
         "DIRECT", // Bing国内版可直连，国际版需代理
@@ -312,7 +315,7 @@ function main(config) {
     // 【OneDrive组】微软云盘
     {
       name: "微软云盘",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/OneDrive.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/OneDrive.png",
       type: "select",
       proxies: [
         "DIRECT", // OneDrive在国内可用，默认直连
@@ -331,7 +334,7 @@ function main(config) {
     // 【微软服务组】Windows Update、Office等
     {
       name: "微软服务",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Microsoft.png",
       type: "select",
       proxies: [
         "节点选择", // 部分微软服务需要代理
@@ -350,7 +353,7 @@ function main(config) {
     // 【苹果服务组】App Store、iCloud、Apple Music等
     {
       name: "苹果服务",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Apple.png",
       type: "select",
       proxies: [
         "DIRECT", // 苹果服务在国内大多可用
@@ -369,7 +372,7 @@ function main(config) {
     // 【游戏平台组】Steam、Epic、Origin等
     {
       name: "游戏平台",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Game.png",
       type: "select",
       proxies: [
         "DIRECT", // 游戏平台默认直连，速度更快
@@ -388,7 +391,7 @@ function main(config) {
     // 【全球直连组】明确需要直连的流量
     {
       name: "全球直连",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Direct.png",
       type: "select",
       proxies: [
         "DIRECT", // 默认直连
@@ -400,7 +403,7 @@ function main(config) {
     // 【广告拦截组】拦截广告域名
     {
       name: "广告拦截",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/AdBlack.png",
       type: "select",
       proxies: [
         "REJECT", // 拒绝连接，拦截广告
@@ -411,7 +414,7 @@ function main(config) {
     // 【应用净化组】去除应用内广告
     {
       name: "应用净化",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hijacking.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hijacking.png",
       type: "select",
       proxies: [
         "REJECT", // 拒绝连接
@@ -422,7 +425,7 @@ function main(config) {
     // 【漏网之鱼组】所有规则都不匹配时使用
     {
       name: "漏网之鱼",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Final.png",
       type: "select",
       proxies: [
         "节点选择", // 默认走代理
@@ -444,40 +447,43 @@ function main(config) {
     // 【香港节点组】自动选择延迟最低的香港节点
     {
       name: "香港节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Hong_Kong.png",
       "include-all": true, // 包含所有节点
       filter: "港|HK|hk|Hong Kong|HongKong|hongkong", // 通过正则表达式筛选香港节点
       type: "url-test", // 自动测速
       interval: 300, // 测速间隔300秒
       tolerance: 50, // 延迟容差50ms
+      lazy: true, // 延迟测速：仅在被选中时才测速
     },
 
     // 【台湾节点组】
     {
       name: "台湾节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png",
       "include-all": true,
       filter: "台|新北|彰化|TW|tw|Taiwan|taiwan", // 筛选台湾节点
       type: "url-test",
       interval: 300,
       tolerance: 50,
+      lazy: true,
     },
 
     // 【新加坡节点组】
     {
       name: "狮城节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Singapore.png",
       "include-all": true,
       filter: "新加坡|坡|狮城|SG|sg|Singapore|singapore", // 筛选新加坡节点
       type: "url-test",
       interval: 300,
       tolerance: 50,
+      lazy: true,
     },
 
     // 【美国节点组】
     {
       name: "美国节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/United_States.png",
       "include-all": true,
       // 筛选美国节点（包含主要城市名）
       filter:
@@ -485,34 +491,37 @@ function main(config) {
       type: "url-test",
       interval: 300,
       tolerance: 50,
+      lazy: true,
     },
 
     // 【日本节点组】
     {
       name: "日本节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Japan.png",
       "include-all": true,
       filter: "日本|川日|东京|大阪|泉日|埼玉|沪日|深日|JP|jp|Japan|japan", // 筛选日本节点
       type: "url-test",
       interval: 300,
       tolerance: 50,
+      lazy: true,
     },
 
     // 【韩国节点组】
     {
       name: "韩国节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Korea.png",
       "include-all": true,
       filter: "KR|kr|Korea|korea|KOR|kor|首尔|韩", // 筛选韩国节点
       type: "url-test",
       interval: 300,
       tolerance: 50,
+      lazy: true,
     },
 
     // 【其他地区节点组】不属于上述地区的节点
     {
       name: "其他节点",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
       "include-all": true,
       // 排除上述所有地区，剩下的就是其他地区
       "exclude-filter":
@@ -520,12 +529,13 @@ function main(config) {
       type: "url-test",
       interval: 300,
       tolerance: 50,
+      lazy: true,
     },
 
     // 【全局组】包含所有代理组，方便统一管理
     {
       name: "GLOBAL",
-      icon: "https://testingcf.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png",
       "include-all": true, // 包含所有节点
       type: "select", // 手动选择
       proxies: [
@@ -563,10 +573,11 @@ function main(config) {
   // ==================== 规则提供者配置 ====================
   // 规则提供者：从远程下载规则列表，定期更新
 
+  // ⚠️ 修复点2：将所有 testingcf 替换为了更稳定的 fastly 源，防止规则下载超时导致断网
   config["rule-providers"] = {
     // 局域网规则：本地网络地址，应该直连
     LocalAreaNetwork: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list",
       path: "./ruleset/LocalAreaNetwork.list", // 本地缓存路径
       behavior: "classical", // 规则类型：经典模式（支持所有规则类型）
       interval: 86400, // 更新间隔：86400秒=24小时
@@ -577,7 +588,7 @@ function main(config) {
     MyCustomDirect: {
       type: "http",
       behavior: "classical",
-      url: "https://testingcf.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list",
+      url: "https://fastly.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list",
       path: "./ruleset/MyCustomDirect.list",
       interval: 86400,
       format: "text",
@@ -585,7 +596,7 @@ function main(config) {
 
     // 白名单规则：不应该被拦截的域名
     UnBan: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/UnBan.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/UnBan.list",
       path: "./ruleset/UnBan.list",
       behavior: "classical",
       interval: 86400,
@@ -595,7 +606,7 @@ function main(config) {
 
     // 广告拦截规则：常见广告域名列表
     BanAD: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanAD.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanAD.list",
       path: "./ruleset/BanAD.list",
       behavior: "classical",
       interval: 86400,
@@ -605,7 +616,7 @@ function main(config) {
 
     // 应用内广告拦截规则
     BanProgramAD: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list",
       path: "./ruleset/BanProgramAD.list",
       behavior: "classical",
       interval: 86400,
@@ -615,7 +626,7 @@ function main(config) {
 
     // Google FCM推送服务规则
     GoogleFCM: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/GoogleFCM.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/GoogleFCM.list",
       path: "./ruleset/GoogleFCM.list",
       behavior: "classical",
       interval: 86400,
@@ -625,7 +636,7 @@ function main(config) {
 
     // Google中国服务规则（可直连）
     GoogleCN: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/GoogleCN.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/GoogleCN.list",
       path: "./ruleset/GoogleCN.list",
       behavior: "classical",
       interval: 86400,
@@ -635,7 +646,7 @@ function main(config) {
 
     // Steam中国服务规则（可直连）
     SteamCN: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/SteamCN.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/SteamCN.list",
       path: "./ruleset/SteamCN.list",
       behavior: "classical",
       interval: 86400,
@@ -645,7 +656,7 @@ function main(config) {
 
     // 微软Bing规则
     Bing: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Bing.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Bing.list",
       path: "./ruleset/Bing.list",
       behavior: "classical",
       interval: 86400,
@@ -655,7 +666,7 @@ function main(config) {
 
     // OneDrive规则
     OneDrive: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/OneDrive.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/OneDrive.list",
       path: "./ruleset/OneDrive.list",
       behavior: "classical",
       interval: 86400,
@@ -665,7 +676,7 @@ function main(config) {
 
     // 微软服务规则
     Microsoft: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Microsoft.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Microsoft.list",
       path: "./ruleset/Microsoft.list",
       behavior: "classical",
       interval: 86400,
@@ -675,7 +686,7 @@ function main(config) {
 
     // 苹果服务规则
     Apple: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Apple.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Apple.list",
       path: "./ruleset/Apple.list",
       behavior: "classical",
       interval: 86400,
@@ -685,7 +696,7 @@ function main(config) {
 
     // Telegram规则
     Telegram: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Telegram.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Telegram.list",
       path: "./ruleset/Telegram.list",
       behavior: "classical",
       interval: 86400,
@@ -695,7 +706,7 @@ function main(config) {
 
     // AI平台规则（ChatGPT、Claude等）
     "AI平台-国外": {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/AI.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/AI.list",
       path: "./ruleset/AI.list",
       behavior: "classical",
       interval: 86400,
@@ -705,7 +716,7 @@ function main(config) {
 
     // 网易云音乐规则
     NetEaseMusic: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list",
       path: "./ruleset/NetEaseMusic.list",
       behavior: "classical",
       interval: 86400,
@@ -715,7 +726,7 @@ function main(config) {
 
     // Epic游戏平台规则
     Epic: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list",
       path: "./ruleset/Epic.list",
       behavior: "classical",
       interval: 86400,
@@ -725,7 +736,7 @@ function main(config) {
 
     // Origin游戏平台规则
     Origin: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list",
       path: "./ruleset/Origin.list",
       behavior: "classical",
       interval: 86400,
@@ -735,7 +746,7 @@ function main(config) {
 
     // Sony PlayStation规则
     Sony: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list",
       path: "./ruleset/Sony.list",
       behavior: "classical",
       interval: 86400,
@@ -745,7 +756,7 @@ function main(config) {
 
     // Steam规则
     Steam: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Steam.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Steam.list",
       path: "./ruleset/Steam.list",
       behavior: "classical",
       interval: 86400,
@@ -755,7 +766,7 @@ function main(config) {
 
     // 任天堂Switch规则
     Nintendo: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Nintendo.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Nintendo.list",
       path: "./ruleset/Nintendo.list",
       behavior: "classical",
       interval: 86400,
@@ -765,7 +776,7 @@ function main(config) {
 
     // YouTube规则
     YouTube: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/YouTube.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/YouTube.list",
       path: "./ruleset/YouTube.list",
       behavior: "classical",
       interval: 86400,
@@ -775,7 +786,7 @@ function main(config) {
 
     // Netflix规则
     Netflix: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Netflix.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Netflix.list",
       path: "./ruleset/Netflix.list",
       behavior: "classical",
       interval: 86400,
@@ -785,7 +796,7 @@ function main(config) {
 
     // 巴哈姆特（台湾视频网站）规则
     Bahamut: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list",
       path: "./ruleset/Bahamut.list",
       behavior: "classical",
       interval: 86400,
@@ -795,7 +806,7 @@ function main(config) {
 
     // 中国媒体规则（国内流媒体）
     ChinaMedia: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaMedia.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaMedia.list",
       path: "./ruleset/ChinaMedia.list",
       behavior: "classical",
       interval: 86400,
@@ -805,7 +816,7 @@ function main(config) {
 
     // 国外媒体规则（国外流媒体）
     ProxyMedia: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list",
       path: "./ruleset/ProxyMedia.list",
       behavior: "classical",
       interval: 86400,
@@ -815,7 +826,7 @@ function main(config) {
 
     // GFW规则（需要代理的网站列表）
     ProxyGFWlist: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list",
       path: "./ruleset/ProxyGFWlist.list",
       behavior: "classical",
       interval: 86400,
@@ -825,7 +836,7 @@ function main(config) {
 
     // 中国域名规则（behavior: domain - 域名专用格式）
     ChinaDomain: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaDomain.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaDomain.list",
       path: "./ruleset/ChinaDomain.list",
       behavior: "domain", // 域名专用格式，匹配速度更快
       interval: 86400,
@@ -835,7 +846,7 @@ function main(config) {
 
     // 中国公司IP规则（behavior: ipcidr - IP段专用格式）
     ChinaCompanyIp: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaCompanyIp.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaCompanyIp.list",
       path: "./ruleset/ChinaCompanyIp.list",
       behavior: "ipcidr", // IP段专用格式
       interval: 86400,
@@ -845,7 +856,7 @@ function main(config) {
 
     // 下载工具规则（BT、PT等）
     Download: {
-      url: "https://testingcf.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Download.list",
+      url: "https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Download.list",
       path: "./ruleset/Download.list",
       behavior: "classical",
       interval: 86400,
@@ -881,7 +892,9 @@ function main(config) {
     "RULE-SET,Nintendo,游戏平台", // Switch → 游戏平台组
     "RULE-SET,YouTube,油管视频", // YouTube → 油管视频组
     "RULE-SET,Netflix,奈飞视频", // Netflix → 奈飞视频组
+    "RULE-SET,Bahamut,国外媒体", // 巴哈姆特 → 国外媒体组
     "RULE-SET,ChinaMedia,国内媒体", // 国内流媒体 → 国内媒体组
+    "RULE-SET,NetEaseMusic,国内媒体", // 网易云音乐 → 国内媒体组
     "RULE-SET,ProxyMedia,国外媒体", // 国外流媒体 → 国外媒体组
     "RULE-SET,ProxyGFWlist,节点选择", // GFW列表 → 节点选择组
     "RULE-SET,ChinaDomain,全球直连", // 中国域名 → 直连
@@ -889,7 +902,8 @@ function main(config) {
     "RULE-SET,Download,全球直连", // 下载工具 → 直连
 
     // ==================== 【第三优先级】地理位置规则 ====================
-    "GEOIP,CN,全球直连", // 中国大陆IP → 直连
+    "GEOIP,LAN,全球直连,no-resolve", // 局域网IP → 直连（no-resolve：不触发DNS解析）
+    "GEOIP,CN,全球直连,no-resolve", // 中国大陆IP → 直连（no-resolve：避免对已是IP的流量再做DNS查询）
 
     // ==================== 【最后】兜底规则 ====================
     "MATCH,漏网之鱼", // 所有上面都不匹配的 → 漏网之鱼组（通常走代理）
