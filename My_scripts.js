@@ -294,8 +294,8 @@ function main(config) {
       icon: 'https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/bing.png',
       type: 'select',
       proxies: [
-        'DIRECT', // Bing国内版可直连，国际版需代理
-        '节点选择',
+        '节点选择', // Bing国际版需代理
+        'DIRECT',
         '美国节点',
         '香港节点',
         '台湾节点',
