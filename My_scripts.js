@@ -10,10 +10,10 @@ function main(config) {
   // 定义国内DNS服务器列表（使用DoH协议 - DNS over HTTPS）
   const cnDnsList = ['https://223.5.5.5/dns-query', 'https://1.12.12.12/dns-query']
 
-  // 定义可信的国外DNS服务器列表
+  // 定义可信的国外DNS服务器列表（优先使用兼容性更好的 DoH）
   const trustDnsList = [
-    'quic://dns.cooluc.com',
-    'https://1.0.0.1/dns-query',
+    'https://dns.cloudflare.com/dns-query',
+    'https://dns.google/dns-query',
     'https://1.1.1.1/dns-query',
   ]
 
@@ -40,7 +40,7 @@ function main(config) {
     },
 
     // 备用DNS服务器：当主DNS返回可疑结果时使用（与nameserver不同，避免两者互为备用失效）
-    fallback: ['https://8.8.8.8/dns-query', 'https://8.8.4.4/dns-query'],
+    fallback: ['https://dns.google/dns-query', 'https://dns.cloudflare.com/dns-query'],
 
     // 备用DNS过滤器：判断DNS结果是否被污染
     'fallback-filter': {
@@ -572,7 +572,7 @@ function main(config) {
   config['rule-providers'] = {
     // 局域网规则：本地网络地址，应该直连
     LocalAreaNetwork: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/LocalAreaNetwork.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/LocalAreaNetwork.list',
       path: './ruleset/LocalAreaNetwork.list', // 本地缓存路径
       behavior: 'classical', // 规则类型：经典模式（支持所有规则类型）
       interval: 86400, // 更新间隔：86400秒=24小时
@@ -591,7 +591,7 @@ function main(config) {
 
     // 白名单规则：不应该被拦截的域名
     UnBan: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/UnBan.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/UnBan.list',
       path: './ruleset/UnBan.list',
       behavior: 'classical',
       interval: 86400,
@@ -601,7 +601,7 @@ function main(config) {
 
     // 广告拦截规则：常见广告域名列表
     BanAD: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanAD.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list',
       path: './ruleset/BanAD.list',
       behavior: 'classical',
       interval: 86400,
@@ -611,7 +611,7 @@ function main(config) {
 
     // 应用内广告拦截规则
     BanProgramAD: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanProgramAD.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanProgramAD.list',
       path: './ruleset/BanProgramAD.list',
       behavior: 'classical',
       interval: 86400,
@@ -621,7 +621,7 @@ function main(config) {
 
     // Google FCM推送服务规则
     GoogleFCM: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/GoogleFCM.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/GoogleFCM.list',
       path: './ruleset/GoogleFCM.list',
       behavior: 'classical',
       interval: 86400,
@@ -631,7 +631,7 @@ function main(config) {
 
     // Google中国服务规则（可直连）
     GoogleCN: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/GoogleCN.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/GoogleCN.list',
       path: './ruleset/GoogleCN.list',
       behavior: 'classical',
       interval: 86400,
@@ -641,7 +641,7 @@ function main(config) {
 
     // Steam中国服务规则（可直连）
     SteamCN: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/SteamCN.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/SteamCN.list',
       path: './ruleset/SteamCN.list',
       behavior: 'classical',
       interval: 86400,
@@ -651,7 +651,7 @@ function main(config) {
 
     // 微软Bing规则
     Bing: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Bing.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Bing.list',
       path: './ruleset/Bing.list',
       behavior: 'classical',
       interval: 86400,
@@ -661,7 +661,7 @@ function main(config) {
 
     // OneDrive规则
     OneDrive: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/OneDrive.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/OneDrive.list',
       path: './ruleset/OneDrive.list',
       behavior: 'classical',
       interval: 86400,
@@ -671,7 +671,7 @@ function main(config) {
 
     // 微软服务规则
     Microsoft: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Microsoft.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Microsoft.list',
       path: './ruleset/Microsoft.list',
       behavior: 'classical',
       interval: 86400,
@@ -681,7 +681,7 @@ function main(config) {
 
     // 苹果服务规则
     Apple: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Apple.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Apple.list',
       path: './ruleset/Apple.list',
       behavior: 'classical',
       interval: 86400,
@@ -691,7 +691,7 @@ function main(config) {
 
     // Telegram规则
     Telegram: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Telegram.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Telegram.list',
       path: './ruleset/Telegram.list',
       behavior: 'classical',
       interval: 86400,
@@ -701,7 +701,7 @@ function main(config) {
 
     // AI平台规则（ChatGPT、Claude等）
     'AI平台-国外': {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/AI.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list',
       path: './ruleset/AI.list',
       behavior: 'classical',
       interval: 86400,
@@ -711,7 +711,7 @@ function main(config) {
 
     // 网易云音乐规则
     NetEaseMusic: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/NetEaseMusic.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/NetEaseMusic.list',
       path: './ruleset/NetEaseMusic.list',
       behavior: 'classical',
       interval: 86400,
@@ -721,7 +721,7 @@ function main(config) {
 
     // Epic游戏平台规则
     Epic: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Epic.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Epic.list',
       path: './ruleset/Epic.list',
       behavior: 'classical',
       interval: 86400,
@@ -731,7 +731,7 @@ function main(config) {
 
     // Origin游戏平台规则
     Origin: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Origin.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Origin.list',
       path: './ruleset/Origin.list',
       behavior: 'classical',
       interval: 86400,
@@ -741,7 +741,7 @@ function main(config) {
 
     // Sony PlayStation规则
     Sony: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Sony.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Sony.list',
       path: './ruleset/Sony.list',
       behavior: 'classical',
       interval: 86400,
@@ -751,7 +751,7 @@ function main(config) {
 
     // Steam规则
     Steam: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Steam.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Steam.list',
       path: './ruleset/Steam.list',
       behavior: 'classical',
       interval: 86400,
@@ -761,7 +761,7 @@ function main(config) {
 
     // 任天堂Switch规则
     Nintendo: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Nintendo.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Nintendo.list',
       path: './ruleset/Nintendo.list',
       behavior: 'classical',
       interval: 86400,
@@ -771,7 +771,7 @@ function main(config) {
 
     // YouTube规则
     YouTube: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/YouTube.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/YouTube.list',
       path: './ruleset/YouTube.list',
       behavior: 'classical',
       interval: 86400,
@@ -781,7 +781,7 @@ function main(config) {
 
     // Netflix规则
     Netflix: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Netflix.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Netflix.list',
       path: './ruleset/Netflix.list',
       behavior: 'classical',
       interval: 86400,
@@ -791,7 +791,7 @@ function main(config) {
 
     // 巴哈姆特（台湾视频网站）规则
     Bahamut: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Ruleset/Bahamut.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/Bahamut.list',
       path: './ruleset/Bahamut.list',
       behavior: 'classical',
       interval: 86400,
@@ -801,7 +801,7 @@ function main(config) {
 
     // 中国媒体规则（国内流媒体）
     ChinaMedia: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaMedia.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaMedia.list',
       path: './ruleset/ChinaMedia.list',
       behavior: 'classical',
       interval: 86400,
@@ -811,7 +811,7 @@ function main(config) {
 
     // 国外媒体规则（国外流媒体）
     ProxyMedia: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyMedia.list',
       path: './ruleset/ProxyMedia.list',
       behavior: 'classical',
       interval: 86400,
@@ -821,7 +821,7 @@ function main(config) {
 
     // GFW规则（需要代理的网站列表）
     ProxyGFWlist: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyGFWlist.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyGFWlist.list',
       path: './ruleset/ProxyGFWlist.list',
       behavior: 'classical',
       interval: 86400,
@@ -831,7 +831,7 @@ function main(config) {
 
     // 中国域名规则（behavior: domain - 域名专用格式）
     ChinaDomain: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaDomain.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list',
       path: './ruleset/ChinaDomain.list',
       behavior: 'domain', // 域名专用格式，匹配速度更快
       interval: 86400,
@@ -841,7 +841,7 @@ function main(config) {
 
     // 中国公司IP规则（behavior: ipcidr - IP段专用格式）
     ChinaCompanyIp: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaCompanyIp.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaCompanyIp.list',
       path: './ruleset/ChinaCompanyIp.list',
       behavior: 'classical', // 文件内容为 IP-CIDR,x.x.x.x/x 格式，使用 classical
       interval: 86400,
@@ -851,7 +851,7 @@ function main(config) {
 
     // 下载工具规则（BT、PT等）
     Download: {
-      url: 'https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/Download.list',
+      url: 'https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Download.list',
       path: './ruleset/Download.list',
       behavior: 'classical',
       interval: 86400,
