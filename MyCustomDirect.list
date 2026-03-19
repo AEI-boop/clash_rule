@@ -44,6 +44,10 @@ DOMAIN-SUFFIX,store.epicgames.com
 
 # ========== 国内网站和服务 ==========
 DOMAIN-SUFFIX,126.net
+DOMAIN-SUFFIX,icourse163.org
+DOMAIN-SUFFIX,icourse163.cn
+DOMAIN-SUFFIX,study.163.com
+DOMAIN-SUFFIX,mc.stu.126.net
 DOMAIN-SUFFIX,163.com
 DOMAIN-SUFFIX,taobao.com
 DOMAIN-SUFFIX,youdao.com
