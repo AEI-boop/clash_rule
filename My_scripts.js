@@ -55,14 +55,14 @@ function main(config) {
   // ==================== GEO 数据库 ====================
 
   // 国内访问 GitHub 慢，通过镜像加速 GEO 数据库下载
-  const githubPrefix = 'https://fastgh.lainbo.com/'
+  // fastgh.lainbo.com 是 GitHub 反代镜像，直接替换域名即可，不拼接完整 URL
   const rawGeoxURLs = {
     geoip: 'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip-lite.dat',
     geosite: 'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat',
     mmdb: 'https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/country-lite.mmdb',
   }
   config['geox-url'] = Object.fromEntries(
-    Object.entries(rawGeoxURLs).map(([k, url]) => [k, `${githubPrefix}${url}`])
+    Object.entries(rawGeoxURLs).map(([k, url]) => [k, url.replace('https://github.com', 'https://fastgh.lainbo.com')])
   )
 
   // ==================== 代理组 ====================
@@ -161,10 +161,20 @@ function main(config) {
 
   // ==================== 规则提供者 ====================
 
-  // 工厂函数消除每条 rule-provider 的重复字段
+  // ACL4SSR 规则集工厂
   const acl = (name, path, behavior = 'classical') => ({
     url: `https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/${path}`,
     path: `./ruleset/${name}.list`,
+    behavior,
+    interval: 86400,
+    format: 'text',
+    type: 'http',
+  })
+
+  // blackmatrix7 规则集工厂（AI、广告等规则更新更及时）
+  const bm7 = (name, behavior = 'classical') => ({
+    url: `https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/${name}/${name}.list`,
+    path: `./ruleset/bm7_${name}.list`,
     behavior,
     interval: 86400,
     format: 'text',
@@ -186,6 +196,8 @@ function main(config) {
     UnBan:             acl('UnBan',             'UnBan.list'),
     BanAD:             acl('BanAD',             'BanAD.list'),
     BanProgramAD:      acl('BanProgramAD',      'BanProgramAD.list'),
+    // AdGuard 规则比 ACL4SSR BanAD 覆盖更广，作为补充拦截层
+    AdGuardFilter:     bm7('AdGuardSDNSFilter'),
     GoogleFCM:         acl('GoogleFCM',         'Ruleset/GoogleFCM.list'),
     GoogleCN:          acl('GoogleCN',          'Ruleset/GoogleCN.list'),
     SteamCN:           acl('SteamCN',           'Ruleset/SteamCN.list'),
@@ -194,7 +206,10 @@ function main(config) {
     Microsoft:         acl('Microsoft',         'Microsoft.list'),
     Apple:             acl('Apple',             'Apple.list'),
     Telegram:          acl('Telegram',          'Telegram.list'),
-    'AI平台-国外':     acl('AI',                'Ruleset/AI.list'),
+    // AI 规则来自 blackmatrix7，覆盖 ChatGPT/Claude/Gemini 等主流平台，比 ACL4SSR 更全更新
+    'AI-OpenAI':       bm7('OpenAI'),
+    'AI-Claude':       bm7('Claude'),
+    'AI-Gemini':       bm7('Gemini'),
     Epic:              acl('Epic',              'Ruleset/Epic.list'),
     Origin:            acl('Origin',            'Ruleset/Origin.list'),
     Sony:              acl('Sony',              'Ruleset/Sony.list'),
@@ -224,6 +239,7 @@ function main(config) {
     'RULE-SET,UnBan,全球直连',
     'RULE-SET,BanAD,广告拦截',
     'RULE-SET,BanProgramAD,应用净化',
+    'RULE-SET,AdGuardFilter,广告拦截',
     'RULE-SET,GoogleFCM,谷歌FCM',
     'RULE-SET,GoogleCN,全球直连',
     'RULE-SET,SteamCN,全球直连',
@@ -232,7 +248,9 @@ function main(config) {
     'RULE-SET,Microsoft,微软服务',
     'RULE-SET,Apple,苹果服务',
     'RULE-SET,Telegram,电报消息',
-    'RULE-SET,AI平台-国外,AI节点',
+    'RULE-SET,AI-OpenAI,AI节点',
+    'RULE-SET,AI-Claude,AI节点',
+    'RULE-SET,AI-Gemini,AI节点',
     'RULE-SET,Epic,游戏平台',
     'RULE-SET,Origin,游戏平台',
     'RULE-SET,Sony,游戏平台',
