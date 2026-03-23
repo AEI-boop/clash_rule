@@ -1,31 +1,21 @@
 # ========================================
 # 自定义直连规则集
 # 作者: AEI-boop
-# 更新时间: 2026-03-19
+# 更新时间: 2026-03-23
 # ========================================
 
-# ========== 微信相关 ==========
+# ========== 微信 / QQ ==========
 PROCESS-NAME,WeChatAppEx Helper
 PROCESS-NAME,Wechat
 DOMAIN-SUFFIX,wechat.com
-DOMAIN-SUFFIX,weixin.qq.com
-DOMAIN-SUFFIX,wx.qq.com
+# qq.com 已覆盖 weixin.qq.com 和 wx.qq.com，无需重复
 DOMAIN-SUFFIX,qq.com
 
 # ========== 杭州电子科技大学 ==========
-
-# --- 域名规则 ---
+# hdu.edu.cn 已覆盖所有子域名，DOMAIN 条目无需重复
 DOMAIN-SUFFIX,hdu.edu.cn
 DOMAIN-SUFFIX,hdu.edu
-DOMAIN,www.hdu.edu.cn
-DOMAIN,webvpn.hdu.edu.cn
-DOMAIN,mail.hdu.edu.cn
-DOMAIN,lib.hdu.edu.cn
-DOMAIN,jwc.hdu.edu.cn
-DOMAIN,yjs.hdu.edu.cn
-DOMAIN,cas.hdu.edu.cn
 
-# --- IPv4 公网地址 ---
 # 学校 VPN 出口
 IP-CIDR,218.75.123.0/24,no-resolve
 IP-CIDR,218.75.0.0/16,no-resolve
@@ -37,14 +27,12 @@ DOMAIN-SUFFIX,icourse163.org
 DOMAIN-SUFFIX,wiki.ros.org
 DOMAIN-SUFFIX,chaoxing.com
 
-
 # ========== 游戏和平台 ==========
 DOMAIN-SUFFIX,steampp.net
 DOMAIN-SUFFIX,store.epicgames.com
 
 # ========== 国内网站和服务 ==========
 DOMAIN-SUFFIX,126.net
-DOMAIN-SUFFIX,icourse163.org
 DOMAIN-SUFFIX,icourse163.cn
 DOMAIN-SUFFIX,study.163.com
 DOMAIN-SUFFIX,mc.stu.126.net
@@ -57,12 +45,10 @@ DOMAIN-SUFFIX,xrzww.com
 DOMAIN-SUFFIX,doubao.com
 DOMAIN-SUFFIX,douyin.com
 DOMAIN-SUFFIX,zhutix.com
-DOMAIN-SUFFIX,download.zhutix.com
-DOMAIN-SUFFIX,static.zhutix.com
-DOMAIN-SUFFIX,img.zhutix.com
 DOMAIN,sixyin.com
 DOMAIN,gitcode.com
 DOMAIN,pan.quark.cn
 DOMAIN,gsgs.nxxbbf.com
+
 # ========== 其他 ==========
 DOMAIN,fmhy.net

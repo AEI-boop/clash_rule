@@ -11,7 +11,7 @@ rule-providers:
   MyCustomDirect:
     type: http
     behavior: classical
-    url: "https://testingcf.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list"
+    url: "https://fastly.jsdelivr.net/gh/AEI-boop/clash_rule@main/MyCustomDirect.list"
     path: ./ruleset/MyCustomDirect.list
     interval: 86400
 ```
@@ -19,7 +19,5 @@ rule-providers:
 ## 规则说明
 
 - 微信、QQ 相关服务
-- 教育网站和学校资源
+- 教育网站和学校资源（杭州电子科技大学）
 - 常用国内网站
-
-
