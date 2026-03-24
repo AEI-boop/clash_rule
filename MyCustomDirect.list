@@ -16,11 +16,7 @@ DOMAIN-SUFFIX,qq.com
 DOMAIN-SUFFIX,hdu.edu.cn
 DOMAIN-SUFFIX,hdu.edu
 
-# 学校 VPN 出口
-IP-CIDR,218.75.123.0/24,no-resolve
-IP-CIDR,218.75.0.0/16,no-resolve
-
-# 教育网常用段
+# 教育网常用段（校外这些 IP 不可达，移除学校 VPN 出口 IP 避免校外超时）
 IP-CIDR,202.114.0.0/16,no-resolve
 IP-CIDR,202.115.0.0/16,no-resolve
 DOMAIN-SUFFIX,icourse163.org

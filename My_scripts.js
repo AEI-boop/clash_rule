@@ -219,8 +219,9 @@ function main(config) {
     YouTube:           acl('YouTube',           'Ruleset/YouTube.list'),
     Netflix:           acl('Netflix',           'Ruleset/Netflix.list'),
     Bahamut:           acl('Bahamut',           'Ruleset/Bahamut.list'),
-    ChinaMedia:        acl('ChinaMedia',        'ChinaMedia.list'),
-    ProxyMedia:        acl('ProxyMedia',        'ProxyMedia.list'),
+    // blackmatrix7 版本不含 URL-REGEX，避免 Clash Meta 解析警告
+    ChinaMedia:        bm7('ChinaMedia'),
+    ProxyMedia:        bm7('GlobalMedia'),
     ProxyGFWlist:      acl('ProxyGFWlist',      'ProxyGFWlist.list'),
     // ChinaMax 比 ACL4SSR ChinaDomain 覆盖更全（含主流国内域名+常见直连服务）
     ChinaDomain:       bm7('ChinaMax'),
