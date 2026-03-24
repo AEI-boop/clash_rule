@@ -119,8 +119,8 @@ function main(config) {
     serviceGroup('电报消息', 'Telegram', ['节点选择', ...allRegions, '手动切换']),
     serviceGroup('油管视频', 'YouTube', ['节点选择', ...allRegions, '手动切换']),
     serviceGroup('奈飞视频', 'Netflix', ['节点选择', ...allRegions, '手动切换']),
-    serviceGroup('国内媒体', 'ChinaMedia', ['全球直连', '节点选择']),
-    serviceGroup('国外媒体', 'GlobalMedia', ['节点选择', ...allRegions, '手动切换']),
+    serviceGroup('国内媒体', 'DomesticMedia', ['全球直连', '节点选择']),
+    serviceGroup('国外媒体', 'ForeignMedia', ['节点选择', ...allRegions, '手动切换']),
     serviceGroup('谷歌FCM', 'Google', ['节点选择', ...allRegions, '手动切换', 'DIRECT']),
     serviceGroup('微软Bing', 'Bing', ['节点选择', ...allRegions, '手动切换', 'DIRECT']),
     serviceGroup('微软云盘', 'OneDrive', ['节点选择', ...allRegions, '手动切换', 'DIRECT']),
@@ -192,7 +192,8 @@ function main(config) {
       format: 'text',
     },
 
-    LocalAreaNetwork:  acl('LocalAreaNetwork',  'LocalAreaNetwork.list'),
+    // blackmatrix7 Lan 比 ACL4SSR LocalAreaNetwork 更新更及时
+    LocalAreaNetwork:  bm7('Lan'),
     UnBan:             acl('UnBan',             'UnBan.list'),
     BanAD:             acl('BanAD',             'BanAD.list'),
     BanProgramAD:      acl('BanProgramAD',      'BanProgramAD.list'),
@@ -221,8 +222,8 @@ function main(config) {
     ChinaMedia:        acl('ChinaMedia',        'ChinaMedia.list'),
     ProxyMedia:        acl('ProxyMedia',        'ProxyMedia.list'),
     ProxyGFWlist:      acl('ProxyGFWlist',      'ProxyGFWlist.list'),
-    // behavior: domain — 域名专用格式，匹配速度更快
-    ChinaDomain:       acl('ChinaDomain',       'ChinaDomain.list', 'domain'),
+    // ChinaMax 比 ACL4SSR ChinaDomain 覆盖更全（含主流国内域名+常见直连服务）
+    ChinaDomain:       bm7('ChinaMax'),
     // 文件内容为 IP-CIDR 格式，用 classical
     ChinaCompanyIp:    acl('ChinaCompanyIp',    'ChinaCompanyIp.list'),
     Download:          acl('Download',          'Download.list'),
