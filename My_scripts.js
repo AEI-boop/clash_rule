@@ -161,9 +161,9 @@ function main(config) {
 
   // ==================== 规则提供者 ====================
 
-  // ACL4SSR 规则集工厂
+  // ACL4SSR 规则集工厂（jsDelivr 加速，国内访问更稳定）
   const acl = (name, path, behavior = 'classical') => ({
-    url: `https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/${path}`,
+    url: `https://fastly.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/${path}`,
     path: `./ruleset/${name}.list`,
     behavior,
     interval: 86400,
@@ -171,9 +171,9 @@ function main(config) {
     type: 'http',
   })
 
-  // blackmatrix7 规则集工厂（AI、广告等规则更新更及时）
+  // blackmatrix7 规则集工厂（jsDelivr 加速，AI、广告等规则更新更及时）
   const bm7 = (name, behavior = 'classical') => ({
-    url: `https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/${name}/${name}.list`,
+    url: `https://fastly.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/${name}/${name}.list`,
     path: `./ruleset/bm7_${name}.list`,
     behavior,
     interval: 86400,
