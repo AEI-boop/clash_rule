@@ -72,7 +72,10 @@ function main(config) {
     // 国内 / 国外严格分流
     // 国内域名：纯 IP UDP 53（速度 + 稳定）；国外域名：DoH+PROXY（抗污染）
     // geolocation-!cn 比 gfw 列表覆盖更全且持续维护
+    // rule-set 项：自定义直连规则集强制走国内 DNS，避免 fall back 到 trustDns
+    // 导致代理挂掉时连直连域名都解析失败（节点全断 → DoH 不通 → 整体瘫痪）
     'nameserver-policy': {
+      'rule-set:MyCustomDirect,LocalAreaNetwork,UnBan,GoogleCN,SteamCN,ChinaMedia,NetEaseMusic,ChinaDomain,Download': cnDns,
       'geosite:private,cn': cnDns,
       'geosite:geolocation-!cn': trustDns,
     },
