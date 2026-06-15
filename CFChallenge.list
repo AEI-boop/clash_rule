@@ -1,0 +1,10 @@
+# ========================================
+# Cloudflare 验证码/风控域名
+# 置顶规则，避免 AI 服务触发 CF 风控被拦截
+# 更新时间: 2026-06-15
+# ========================================
+
+DOMAIN-SUFFIX,challenges.cloudflare.com
+DOMAIN-SUFFIX,turnstile.cloudflare.com
+DOMAIN-SUFFIX,hcaptcha.com
+DOMAIN-SUFFIX,recaptcha.net

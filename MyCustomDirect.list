@@ -1,27 +1,49 @@
 # ========================================
 # 自定义直连规则集
 # 作者: AEI-boop
-# 更新时间: 2026-03-24
+# 更新时间: 2026-06-15
+# 变更：增强教育网/学术文献库覆盖，补充微信/QQ核心域名
 # ========================================
 
 # ========== 微信 / QQ ==========
 PROCESS-NAME,WeChatAppEx Helper
 PROCESS-NAME,Wechat
 DOMAIN-SUFFIX,wechat.com
+DOMAIN-SUFFIX,wechatpay.com
+DOMAIN-SUFFIX,weixin.qq.com
+DOMAIN-SUFFIX,servicewechat.com
 # qq.com 已覆盖 weixin.qq.com 和 wx.qq.com，无需重复
 DOMAIN-SUFFIX,qq.com
+DOMAIN-SUFFIX,qpic.cn
+DOMAIN-SUFFIX,gtimg.com
 
 # ========== 杭州电子科技大学 ==========
 # hdu.edu.cn 已覆盖所有子域名，DOMAIN 条目无需重复
 DOMAIN-SUFFIX,hdu.edu.cn
 DOMAIN-SUFFIX,hdu.edu
 
+# ========== 教育网资源 ==========
+# 通用教育网域名
+DOMAIN-SUFFIX,edu.cn
+
 # 教育网常用段（校外这些 IP 不可达，移除学校 VPN 出口 IP 避免校外超时）
 IP-CIDR,202.114.0.0/16,no-resolve
 IP-CIDR,202.115.0.0/16,no-resolve
+IP-CIDR6,2001:da8::/32,no-resolve
+
+# 教育网常用平台
 DOMAIN-SUFFIX,icourse163.org
 DOMAIN-SUFFIX,wiki.ros.org
 DOMAIN-SUFFIX,chaoxing.com
+
+# ========== 学术文献库 ==========
+DOMAIN-SUFFIX,cnki.net
+DOMAIN-SUFFIX,wanfangdata.com.cn
+DOMAIN-SUFFIX,webofscience.com
+DOMAIN-SUFFIX,sciencedirect.com
+DOMAIN-SUFFIX,springer.com
+DOMAIN-SUFFIX,ieee.org
+DOMAIN-SUFFIX,ncbi.nlm.nih.gov
 
 # ========== 知识管理 / 笔记 ==========
 # 语雀无专属规则集，手动维护
@@ -32,6 +54,15 @@ DOMAIN-SUFFIX,aliyuncs.com
 DOMAIN-SUFFIX,steampp.net
 
 # ========== 国内网站和服务 ==========
+# 国产 AI（走直连 + 国内 DNS，避免绕路延迟）
+DOMAIN-SUFFIX,deepseek.com
+DOMAIN-SUFFIX,moonshot.cn
+DOMAIN-SUFFIX,tongyi.aliyun.com
+DOMAIN-SUFFIX,yiyan.baidu.com
+DOMAIN-SUFFIX,doubao.com
+DOMAIN-SUFFIX,hunyuan.tencent.com
+DOMAIN-SUFFIX,zhipuai.cn
+
 DOMAIN-SUFFIX,126.net
 DOMAIN-SUFFIX,icourse163.cn
 DOMAIN-SUFFIX,study.163.com
@@ -42,13 +73,13 @@ DOMAIN-SUFFIX,youdao.com
 DOMAIN-SUFFIX,ydstatic.com
 DOMAIN-SUFFIX,nosdn.127.net
 DOMAIN-SUFFIX,xrzww.com
-DOMAIN-SUFFIX,doubao.com
 DOMAIN-SUFFIX,douyin.com
 DOMAIN-SUFFIX,zhutix.com
-DOMAIN,sixyin.com
-DOMAIN,gitcode.com
-DOMAIN,pan.quark.cn
-DOMAIN,gsgs.nxxbbf.com
+DOMAIN-SUFFIX,sixyin.com
+DOMAIN-SUFFIX,gitcode.com
+DOMAIN-SUFFIX,quark.cn
+DOMAIN-SUFFIX,nxxbbf.com
 
 # ========== 其他 ==========
-DOMAIN,fmhy.net
+DOMAIN-SUFFIX,tokendance.space
+DOMAIN-SUFFIX,fmhy.net

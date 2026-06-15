@@ -75,7 +75,15 @@ function main(config) {
     // rule-set 项：自定义直连规则集强制走国内 DNS，避免 fall back 到 trustDns
     // 导致代理挂掉时连直连域名都解析失败（节点全断 → DoH 不通 → 整体瘫痪）
     'nameserver-policy': {
-      'rule-set:MyCustomDirect,LocalAreaNetwork,UnBan,GoogleCN,SteamCN,ChinaMedia,NetEaseMusic,ChinaDomain,Download': cnDns,
+      'rule-set:MyCustomDirect': cnDns,
+      'rule-set:LocalAreaNetwork': cnDns,
+      'rule-set:UnBan': cnDns,
+      'rule-set:GoogleCN': cnDns,
+      'rule-set:SteamCN': cnDns,
+      'rule-set:ChinaMedia': cnDns,
+      'rule-set:NetEaseMusic': cnDns,
+      'rule-set:ChinaDomain': cnDns,
+      'rule-set:Download': cnDns,
       'geosite:private,cn': cnDns,
       'geosite:geolocation-!cn': trustDns,
     },
@@ -204,7 +212,7 @@ function main(config) {
     serviceGroup('游戏平台', 'Game', ['节点选择', ...allRegions, '手动切换', 'DIRECT']),
     serviceGroup('全球直连', 'Direct', ['DIRECT', '节点选择']),
     serviceGroup('广告拦截', 'Reject', ['REJECT', 'DIRECT']),
-    serviceGroup('应用净化', 'Reject', ['REJECT', 'DIRECT']),
+    serviceGroup('应用净化', 'Advertising', ['REJECT', 'DIRECT']),
     serviceGroup('漏网之鱼', 'Final', ['节点选择', ...allRegions, '手动切换', 'DIRECT']),
 
     regionGroup('香港节点', 'Hong Kong', '港|HK|hk|Hong Kong|HongKong|hongkong'),
@@ -286,6 +294,16 @@ function main(config) {
     'AI-OpenAI':       bm7('OpenAI'),
     'AI-Claude':       bm7('Claude'),
     'AI-Gemini':       bm7('Gemini'),
+    'AI-Copilot':      bm7('Copilot'),
+    // CF 验证码域名，置顶避免触发风控
+    CFChallenge: {
+      type: 'http',
+      behavior: 'classical',
+      url: 'https://fastly.jsdelivr.net/gh/AEI-boop/clash_rule@main/CFChallenge.list',
+      path: './ruleset/CFChallenge.list',
+      interval: 86400,
+      format: 'text',
+    },
     Epic:              acl('Epic',              'Ruleset/Epic.list'),
     Origin:            acl('Origin',            'Ruleset/Origin.list'),
     Sony:              acl('Sony',              'Ruleset/Sony.list'),
@@ -310,7 +328,9 @@ function main(config) {
   // 从上到下匹配，首次命中即生效，高优先级放前面
 
   config['rules'] = [
-    // 【第一优先级】自定义直连规则
+    // 【第一优先级】CF 验证码 — 置顶，避免 AI 服务触发风控被拦截
+    'RULE-SET,CFChallenge,AI节点',
+    // 自定义直连规则（含微信/QQ、教育网、学术文献库、国产 AI 等）
     'RULE-SET,MyCustomDirect,全球直连',
     'RULE-SET,LocalAreaNetwork,全球直连',
     'RULE-SET,UnBan,全球直连',
@@ -328,6 +348,7 @@ function main(config) {
     'RULE-SET,AI-OpenAI,AI节点',
     'RULE-SET,AI-Claude,AI节点',
     'RULE-SET,AI-Gemini,AI节点',
+    'RULE-SET,AI-Copilot,AI节点',
     'RULE-SET,Epic,游戏平台',
     'RULE-SET,Origin,游戏平台',
     'RULE-SET,Sony,游戏平台',
