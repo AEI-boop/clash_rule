@@ -75,6 +75,9 @@ function main(config) {
     // rule-set 项：自定义直连规则集强制走国内 DNS，避免 fall back 到 trustDns
     // 导致代理挂掉时连直连域名都解析失败（节点全断 → DoH 不通 → 整体瘫痪）
     'nameserver-policy': {
+      // 教育网域名走系统 DNS（解析内网地址）
+      '+.hdu.edu.cn': 'system',
+      '+.edu.cn': 'system',
       'rule-set:MyCustomDirect': cnDns,
       'rule-set:LocalAreaNetwork': cnDns,
       'rule-set:UnBan': cnDns,
