@@ -13,9 +13,10 @@ function main(config) {
   // 国内 DNS：纯 IP，UDP 53。阿里 / 腾讯 / 联通递归 DNS，覆盖三网
   const cnDns = ['223.5.5.5', '119.29.29.29', '1.12.12.12']
 
-  // 解析节点域名专用：TCP 模式，规避部分网络环境对机场域名的 UDP 53 拦截
-  // 实测：UDP 53 查询代理机场域名被丢弃，TCP 53 正常返回
-  const proxyServerDns = ['tcp://223.5.5.5', 'tcp://119.29.29.29', 'tcp://1.12.12.12']
+  // 解析节点域名专用：TCP 模式 + system 兜底
+  // 规避部分网络环境对机场域名的 UDP 53 拦截
+  // system 兜底：公共 DNS 都失败时，fallback 到系统本地 DNS（递归查询，不易被 DPI 拦截）
+  const proxyServerDns = ['tcp://223.5.5.5', 'tcp://119.29.29.29', 'tcp://1.12.12.12', 'system']
 
   // 国外 DNS：DoH + 直接 IP 形式，#PROXY 强制走代理出站避免污染
   // 用 IP 而非域名（如 dns.google）避免 default-nameserver 解析失败时整体崩溃
